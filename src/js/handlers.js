@@ -5,7 +5,7 @@ import { renderCategories } from "./render-function";
 export const getCategories = async () => {
     try {
         const dataProducts = await fetchCategories();
-        renderCategories(dataProducts)
+        renderCategories(['All',...dataProducts])
     } catch (error) {
         console.log(error);
         
