@@ -1,4 +1,5 @@
 import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 import {
   fetchCategories,
   fetchProductByID,
@@ -12,6 +13,7 @@ import {
 import { refs } from './refs';
 
 let currentPage = 1;
+let totalPages = 0;
 
 //всі функції обробники
 export const getCategories = async () => {
@@ -27,9 +29,39 @@ export const getProducts = async () => {
   try {
     const result = await fetchProducts(currentPage);
     renderProducts(result.products);
+    totalPages = Math.ceil(result.total / result.limit);
+    if (currentPage < totalPages) {
+      refs.loadMoreBtn.classList.remove('is-hidden');
+    } else {
+      refs.loadMoreBtn.classList.add('is-hidden');
+    }
   } catch (err) {
     iziToast.error({ message: err });
   }
+  refs.loadMoreBtn.addEventListener('click', async () => {
+    refs.loadMoreBtn.classList.add('is-hidden');
+    refs.loaderEl.classList.add('is-visible');
+    currentPage++;
+    const result = await fetchProducts(currentPage);
+    renderProducts(result.products);
+    refs.loaderEl.classList.remove('is-visible');
+    refs.loadMoreBtn.classList.remove('is-hidden');
+    const card = document.querySelector('.products__item');
+    if (card) {
+      const cardHeight = card.getBoundingClientRect().height;
+      window.scrollBy({
+        top: cardHeight * 2,
+        behavior: 'smooth',
+      });
+    }
+    if (currentPage >= totalPages) {
+      refs.loadMoreBtn.classList.add('is-hidden');
+      iziToast.info({
+        message: "We're sorry, but you've reached the end of search results.",
+        position: 'bottomCenter',
+      });
+    }
+  });
 };
 
 export const productClickHandler = () => {
