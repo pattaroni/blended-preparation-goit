@@ -1,8 +1,19 @@
-import { getCategories, getProducts, productClickHandler } from './js/handlers';
-import { scrollToTop } from './js/helpers';
+import {
+  getCategories,
+  getProducts,
+  submitEventFunction,
+  productClickHandler,
+} from './js/handlers';
 
-//Логіка сторінки Home
+import {
+  clearButtonProducts,
+  scrollToTop,
+} from './js/helpers';
+
+// Логіка сторінки Home
 scrollToTop();
 getCategories();
 getProducts();
+submitEventFunction();
+clearButtonProducts();
 productClickHandler();

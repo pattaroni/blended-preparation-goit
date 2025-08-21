@@ -28,6 +28,25 @@ export const renderProducts = data => {
   refs.ulProductEl.insertAdjacentHTML('beforeend', markup);
 };
 
+export const renderByValue = data => {
+  refs.ulProductEl.innerHTML = '';
+
+  const markup = data
+    .map(
+      product =>
+        `<li class="products__item" data-id="${product.id}">
+    <img class="products__image" src="${product.thumbnail}" alt="${product.description}"/>
+    <p class="products__title">${product.title}</p>
+    <p class="products__brand"><span class="products__brand--bold">Brand: ${product.brand}</span></p>
+    <p class="products__category">Category: ${product.category}</p>
+    <p class="products__price">Price: ${product.price}$</p>
+ </li>`
+    )
+    .join('');
+
+  refs.ulProductEl.innerHTML = markup;
+};
+
 export const renderProductByID = data => {
   const markup = `<img class="modal-product__img" src="${data.thumbnail}" alt="${data.description}" />
       <div class="modal-product__content">
