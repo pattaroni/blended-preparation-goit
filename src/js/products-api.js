@@ -17,3 +17,11 @@ export const fetchProducts = async currentPage => {
   });
   return data;
 };
+ 
+export const searchByValue = async (userValue, currentPage) => {
+    const { data } = await axios.get(`${ENDPOINTS.SEARCH}`,{params: {
+        limit: PER_PAGE,
+        q: userValue,}
+    });
+   return data
+}
