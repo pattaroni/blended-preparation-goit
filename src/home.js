@@ -1,8 +1,14 @@
-import { getCategories, getProducts, submitEventFunction } from './js/handlers';
+import {
+  getCategories,
+  getProducts,
+  submitEventFunction,
+  productClickHandler,
+} from './js/handlers';
 import { clearButtonProducts } from './js/helpers';
 
-//Логіка сторінки Home
+// Логіка сторінки Home
 getCategories();
 getProducts();
-submitEventFunction()
-clearButtonProducts()
+submitEventFunction();
+clearButtonProducts();
+productClickHandler();

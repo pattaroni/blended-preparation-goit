@@ -30,8 +30,8 @@ export const renderProducts = data => {
 
 export const renderByValue = data => {
   refs.ulProductEl.innerHTML = '';
-  
-    const markup = data
+
+  const markup = data
     .map(
       product =>
         `<li class="products__item" data-id="${product.id}">
@@ -45,4 +45,19 @@ export const renderByValue = data => {
     .join('');
 
   refs.ulProductEl.innerHTML = markup;
+};
+
+export const renderProductByID = data => {
+  const markup = `<img class="modal-product__img" src="${data.thumbnail}" alt="${data.description}" />
+      <div class="modal-product__content">
+        <p class="modal-product__title">${data.title}</p>
+        <ul class="modal-product__tags">${data.tags}</ul>
+        <p class="modal-product__description">${data.description}</p>
+        <p class="modal-product__shipping-information">Shipping: ${data.shippingInformation}</p>
+        <p class="modal-product__return-policy">Return Policy: ${data.returnPolicy}</p>
+        <p class="modal-product__price">Price: ${data.price}$</p>
+        <button class="modal-product__buy-btn" type="button">Buy</button>
+      </div>
+`;
+  refs.modalListEl.innerHTML = markup;
 };
