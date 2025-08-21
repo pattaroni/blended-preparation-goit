@@ -27,3 +27,18 @@ export const renderProducts = data => {
 
   refs.ulProductEl.insertAdjacentHTML('beforeend', markup);
 };
+
+export const renderProductByID = data => {
+  const markup = `<img class="modal-product__img" src="${data.thumbnail}" alt="${data.description}" />
+      <div class="modal-product__content">
+        <p class="modal-product__title">${data.title}</p>
+        <ul class="modal-product__tags">${data.tags}</ul>
+        <p class="modal-product__description">${data.description}</p>
+        <p class="modal-product__shipping-information">Shipping: ${data.shippingInformation}</p>
+        <p class="modal-product__return-policy">Return Policy: ${data.returnPolicy}</p>
+        <p class="modal-product__price">Price: ${data.price}$</p>
+        <button class="modal-product__buy-btn" type="button">Buy</button>
+      </div>
+`;
+  refs.modalListEl.innerHTML = markup;
+};
