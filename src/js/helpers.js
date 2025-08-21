@@ -51,3 +51,9 @@ export const scrollToTop = () => {
     });
   });
 };
+
+export const clearCategoriesButtons = () => {
+  refs.ulCategorEl.querySelectorAll('.categories__btn').forEach(btn => {
+    btn.classList.remove('categories__btn--active');
+  });
+};

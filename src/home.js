@@ -3,12 +3,10 @@ import {
   getProducts,
   submitEventFunction,
   productClickHandler,
+  categoriesClickHandler,
 } from './js/handlers';
 
-import {
-  clearButtonProducts,
-  scrollToTop,
-} from './js/helpers';
+import { clearButtonProducts, scrollToTop } from './js/helpers';
 
 // Логіка сторінки Home
 scrollToTop();
@@ -17,3 +15,4 @@ getProducts();
 submitEventFunction();
 clearButtonProducts();
 productClickHandler();
+categoriesClickHandler();

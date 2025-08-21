@@ -32,3 +32,16 @@ export const fetchProductByID = async id => {
   const { data } = await axios.get(`${ENDPOINTS.PRODUCTS}/${id}`);
   return data;
 };
+
+export const fetchProductsByCategory = async (category, currentPage) => {
+  const { data } = await axios.get(
+    `${ENDPOINTS.PRODUCTS_BY_CATEGORY}/${category}`,
+    {
+      params: {
+        limit: PER_PAGE,
+        skip: (currentPage - 1) * PER_PAGE,
+      },
+    }
+  );
+  return data;
+};
