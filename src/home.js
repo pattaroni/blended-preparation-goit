@@ -4,9 +4,14 @@ import {
   submitEventFunction,
   productClickHandler,
 } from './js/handlers';
-import { clearButtonProducts } from './js/helpers';
+
+import {
+  clearButtonProducts,
+  scrollToTop,
+} from './js/helpers';
 
 // Логіка сторінки Home
+scrollToTop();
 getCategories();
 getProducts();
 submitEventFunction();
