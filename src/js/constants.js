@@ -13,3 +13,6 @@ export const CONTENT_TYPES = {
   PRODUCTS_BY_CATEGORY: 'productsByCategory',
   SEARCH: 'search',
 };
+
+// Ключ для localStorage
+export const THEME_KEY = 'theme';

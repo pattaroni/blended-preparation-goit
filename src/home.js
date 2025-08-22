@@ -5,9 +5,10 @@ import {
   productClickHandler,
   categoriesClickHandler,
   initLoadMoreHandler,
+  initThemeToggle,
 } from './js/handlers';
 
-import { clearButtonProducts, scrollToTop } from './js/helpers';
+import { clearButtonProducts,scrollToTop } from './js/helpers';
 
 // Логіка сторінки Home
 scrollToTop();
@@ -18,3 +19,4 @@ clearButtonProducts();
 productClickHandler();
 categoriesClickHandler();
 initLoadMoreHandler();
+initThemeToggle();

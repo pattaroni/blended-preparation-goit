@@ -4,6 +4,7 @@ import 'izitoast/dist/css/iziToast.min.css';
 import { refs } from './refs';
 import { getProducts, resetCurrentPage } from './handlers';
 
+
 // Перевірка введеного значення
 export const checkStatusUserValue = userValue => {
   if (!userValue) {
@@ -66,3 +67,11 @@ export const scrollToTop = () => {
     });
   });
 };
+
+export const clearCategoriesButtons = () => {
+  refs.ulCategorEl.querySelectorAll('.categories__btn').forEach(btn => {
+    btn.classList.remove('categories__btn--active');
+  });
+};
+
+// Отримуємо поточну тему або дефолтну
