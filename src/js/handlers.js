@@ -47,6 +47,7 @@ export const submitEventFunction = () => {
   refs.searchFormEl.addEventListener('submit', async e => {
     e.preventDefault();
     userValue = e.target.searchValue.value.trim();
+    localStorage.setItem('userValue', userValue);
 
     if (!checkStatusUserValue(userValue)) return;
 
