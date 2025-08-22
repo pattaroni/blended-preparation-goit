@@ -4,6 +4,7 @@ import {
   submitEventFunction,
   productClickHandler,
   categoriesClickHandler,
+  initLoadMoreHandler,
 } from './js/handlers';
 
 import { clearButtonProducts, scrollToTop } from './js/helpers';
@@ -16,3 +17,4 @@ submitEventFunction();
 clearButtonProducts();
 productClickHandler();
 categoriesClickHandler();
+initLoadMoreHandler();

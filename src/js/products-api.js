@@ -23,6 +23,7 @@ export const searchByValue = async (userValue, currentPage) => {
     params: {
       limit: PER_PAGE,
       q: userValue,
+      skip: (currentPage - 1) * PER_PAGE,
     },
   });
   return data;
