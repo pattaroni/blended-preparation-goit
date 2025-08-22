@@ -11,6 +11,7 @@ export const PER_PAGE = 12;
 export const CONTENT_TYPES = {
   COMMON: 'common',
   PRODUCTS_BY_CATEGORY: 'productsByCategory',
+  SEARCH: 'search',
 };
 
 // Ключ для localStorage

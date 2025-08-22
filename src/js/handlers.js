@@ -33,11 +33,21 @@ let selectedCategory = '';
 let isCategoriesLoading = false;
 let contentType = CONTENT_TYPES.COMMON;
 
+export const resetCurrentPage = () => {
+  currentPage = 1;
+};
+
 // Отримати категорії
 export const getCategories = async () => {
   try {
     const result = await fetchCategories();
     renderCategories(['All', ...result]);
+
+    const allBtn = refs.ulCategorEl.querySelector('button');
+    if (allBtn) {
+      allBtn.classList.add('categories__btn--active');
+      selectedCategory = 'All';
+    }
   } catch (error) {
     iziToast.error({ message: error });
   }
@@ -45,6 +55,14 @@ export const getCategories = async () => {
 
 // Отримати всі продукти
 export const getProducts = async () => {
+  if (!selectedCategory) {
+    selectedCategory = 'All';
+    contentType = CONTENT_TYPES.COMMON;
+    clearCategoriesButtons();
+    const allBtn = refs.ulCategorEl.querySelector('button');
+    if (allBtn) allBtn.classList.add('categories__btn--active');
+  }
+
   try {
     const result = await fetchProducts(currentPage);
     renderProducts(result.products);
@@ -58,7 +76,9 @@ export const getProducts = async () => {
   } catch (err) {
     iziToast.error({ message: err });
   }
+};
 
+export const initLoadMoreHandler = () => {
   refs.loadMoreBtn.addEventListener('click', async () => {
     refs.loadMoreBtn.classList.add('is-hidden');
     refs.loaderEl.classList.add('is-visible');
@@ -74,6 +94,8 @@ export const getProducts = async () => {
         result = await fetchProducts(currentPage);
       } else if (contentType === CONTENT_TYPES.PRODUCTS_BY_CATEGORY) {
         result = await fetchProductsByCategory(selectedCategory, currentPage);
+      } else if (contentType === CONTENT_TYPES.SEARCH) {
+        result = await searchByValue(userValue, currentPage);
       }
       renderProducts(result.products);
 
@@ -116,10 +138,12 @@ export const submitEventFunction = () => {
 
     if (userValue) {
       refs.clearBtnForm.classList.add('search-form__btn-clear--visible');
-      contentType = CONTENT_TYPES.COMMON;
+      contentType = CONTENT_TYPES.SEARCH;
       selectedCategory = '';
       clearCategoriesButtons();
     }
+
+    currentPage = 1;
 
     try {
       currentPage = 1;
@@ -127,6 +151,7 @@ export const submitEventFunction = () => {
       const result = await searchByValue(userValue, currentPage);
 
       if (!checkStatusSearchProduct(result)) {
+        refs.loadMoreBtn.classList.add('is-hidden');
         refs.notFoundEl.classList.add('not-found--visible');
         refs.ulProductEl.innerHTML = '';
         return;
@@ -134,6 +159,13 @@ export const submitEventFunction = () => {
 
       refs.notFoundEl.classList.remove('not-found--visible');
       renderByValue(result.products);
+
+      totalPages = Math.ceil(result.total / result.limit);
+      if (currentPage < totalPages) {
+        refs.loadMoreBtn.classList.remove('is-hidden');
+      } else {
+        refs.loadMoreBtn.classList.add('is-hidden');
+      }
     } catch (error) {
       iziToast.error({ message: error });
     }
