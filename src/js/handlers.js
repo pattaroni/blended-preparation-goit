@@ -133,6 +133,7 @@ export const submitEventFunction = () => {
    e.preventDefault();
     
     userValue = e.target.searchValue.value.trim();
+    localStorage.setItem('userValue', userValue);
 
     if (!checkStatusUserValue(userValue)) return;
 
@@ -280,3 +281,11 @@ export const initThemeToggle = () => {
   if (btn) btn.addEventListener('click', toggleTheme);
 };
 /* #endregion тема*/
+
+export function restoreUserValue(refs, callback) {
+  const savedValue = localStorage.getItem('userValue');
+  if (!savedValue) return;
+
+  refs.searchFormEl.searchValue.value = savedValue;
+  callback(savedValue, 1);
+}
