@@ -108,7 +108,8 @@ export const getProducts = async () => {
 // Обробка сабміту пошуку
 export const submitEventFunction = () => {
   refs.searchFormEl.addEventListener('submit', async e => {
-    e.preventDefault();
+   e.preventDefault();
+    
     userValue = e.target.searchValue.value.trim();
 
     if (!checkStatusUserValue(userValue)) return;
@@ -121,6 +122,8 @@ export const submitEventFunction = () => {
     }
 
     try {
+      currentPage = 1;
+
       const result = await searchByValue(userValue, currentPage);
 
       if (!checkStatusSearchProduct(result)) {
