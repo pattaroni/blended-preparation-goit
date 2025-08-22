@@ -6,6 +6,7 @@ import {
   fetchProducts,
   fetchProductByID,
   searchByValue,
+  fetchProductsByCategory,
 } from './products-api';
 
 import {
@@ -14,16 +15,21 @@ import {
   renderProductByID,
   renderByValue,
 } from './render-function';
+import { CONTENT_TYPES } from './constants';
 
 import { refs } from './refs';
 import {
   checkStatusSearchProduct,
   checkStatusUserValue,
+  clearCategoriesButtons,
 } from './helpers';
 
 let currentPage = 1;
 let userValue;
 let totalPages = 0;
+let selectedCategory = '';
+let isCategoriesLoading = false;
+let contentType = CONTENT_TYPES.COMMON;
 
 // Отримати категорії
 export const getCategories = async () => {
@@ -55,28 +61,44 @@ export const getProducts = async () => {
     refs.loadMoreBtn.classList.add('is-hidden');
     refs.loaderEl.classList.add('is-visible');
     currentPage++;
+    let result;
 
-    const result = await fetchProducts(currentPage);
-    renderProducts(result.products);
-
-    refs.loaderEl.classList.remove('is-visible');
-    refs.loadMoreBtn.classList.remove('is-hidden');
-
-    const card = document.querySelector('.products__item');
-    if (card) {
-      const cardHeight = card.getBoundingClientRect().height;
-      window.scrollBy({
-        top: cardHeight * 2,
-        behavior: 'smooth',
-      });
+    if (selectedCategory) {
+      isCategoriesLoading = true;
     }
 
-    if (currentPage >= totalPages) {
-      refs.loadMoreBtn.classList.add('is-hidden');
-      iziToast.info({
-        message: "We're sorry, but you've reached the end of search results.",
-        position: 'bottomCenter',
+    try {
+      if (contentType === CONTENT_TYPES.COMMON) {
+        result = await fetchProducts(currentPage);
+      } else if (contentType === CONTENT_TYPES.PRODUCTS_BY_CATEGORY) {
+        result = await fetchProductsByCategory(selectedCategory, currentPage);
+      }
+      renderProducts(result.products);
+
+      refs.loadMoreBtn.classList.remove('is-hidden');
+
+      const card = document.querySelector('.products__item');
+      if (card) {
+        const cardHeight = card.getBoundingClientRect().height;
+        window.scrollBy({
+          top: cardHeight * 2,
+          behavior: 'smooth',
+        });
+      }
+      if (currentPage >= totalPages) {
+        refs.loadMoreBtn.classList.add('is-hidden');
+        iziToast.info({
+          message: "We're sorry, but you've reached the end of search results.",
+          position: 'bottomCenter',
+        });
+      }
+    } catch (error) {
+      iziToast.error({
+        message: error.message || 'Failed to load products',
       });
+    } finally {
+      isCategoriesLoading = false;
+      refs.loaderEl.classList.remove('is-visible');
     }
   });
 };
@@ -91,6 +113,9 @@ export const submitEventFunction = () => {
 
     if (userValue) {
       refs.clearBtnForm.classList.add('search-form__btn-clear--visible');
+      contentType = CONTENT_TYPES.COMMON;
+      selectedCategory = '';
+      clearCategoriesButtons();
     }
 
     try {
@@ -138,6 +163,61 @@ export const productClickHandler = () => {
     if (e.target === refs.modalEl) {
       refs.modalEl.classList.remove('modal--is-open');
       refs.modalListEl.innerHTML = '';
+    }
+  });
+};
+
+export const categoriesClickHandler = () => {
+  refs.ulCategorEl.addEventListener('click', async e => {
+    if (e.target.nodeName !== 'BUTTON' || isCategoriesLoading) {
+      return;
+    }
+
+    selectedCategory = e.target.textContent;
+
+    refs.ulProductEl.innerHTML = '';
+    refs.notFoundEl.classList.remove('not-found--visible');
+    refs.loadMoreBtn.classList.add('is-hidden');
+    refs.loaderEl.classList.add('is-visible');
+    refs.clearBtnForm.classList.remove('search-form__btn-clear--visible');
+
+    userValue = '';
+    refs.searchFormEl.reset();
+    clearCategoriesButtons();
+    e.target.classList.add('categories__btn--active');
+
+    currentPage = 1;
+    let result;
+    isCategoriesLoading = true;
+
+    try {
+      if (selectedCategory === 'All') {
+        contentType = CONTENT_TYPES.COMMON;
+        result = await fetchProducts(currentPage);
+      } else {
+        contentType = CONTENT_TYPES.PRODUCTS_BY_CATEGORY;
+        result = await fetchProductsByCategory(selectedCategory, currentPage);
+      }
+
+      renderProducts(result.products);
+      totalPages = Math.ceil(result.total / result.limit);
+
+      if (currentPage < totalPages) {
+        refs.loadMoreBtn.classList.remove('is-hidden');
+      } else {
+        refs.loadMoreBtn.classList.add('is-hidden');
+      }
+
+      if (!result.products.length) {
+        refs.notFoundEl.classList.add('not-found--visible');
+      }
+    } catch (error) {
+      iziToast.error({
+        message: error.message || 'Failed to load category products',
+      });
+    } finally {
+      isCategoriesLoading = false;
+      refs.loaderEl.classList.remove('is-visible');
     }
   });
 };
