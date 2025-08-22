@@ -3,6 +3,8 @@ import 'izitoast/dist/css/iziToast.min.css';
 
 import { refs } from './refs';
 import { getProducts, resetCurrentPage } from './handlers';
+import { renderByValue } from './render-function';
+import { searchByValue } from './products-api';
 
 
 // Перевірка введеного значення
@@ -68,3 +70,35 @@ export const scrollToTop = () => {
   });
 };
 
+//при перезавантажені залишається userValue
+export function restoreUserValue(refs, callback) {
+  const savedValue = localStorage.getItem('userValue');
+  if (!savedValue) return;
+
+  refs.searchFormEl.searchValue.value = savedValue;
+  callback(savedValue, 1);
+}
+
+//
+
+
+refs.homeLogoEl.addEventListener('click', (e) => {
+  localStorage.removeItem('userValue');
+  localStorage.removeItem('selectedCategory');
+  // Якщо перехід через JS — можеш зробити:
+  window.location.href = '/';
+});
+
+
+export async function restoreSearchState() {
+  const userValue = localStorage.getItem('userValue');
+  if (!userValue) return;
+
+  refs.searchFormEl.searchValue.value = userValue;
+
+  const res = await searchByValue(userValue);
+  if (!Array.isArray(res.products)) return;
+  
+ 
+  renderByValue(res.products);
+}
