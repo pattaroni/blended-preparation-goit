@@ -15,13 +15,15 @@ import {
   renderProductByID,
   renderByValue,
 } from './render-function';
-import { CONTENT_TYPES } from './constants';
+import { CONTENT_TYPES, THEME_KEY } from './constants';
 
 import { refs } from './refs';
 import {
+  
   checkStatusSearchProduct,
   checkStatusUserValue,
   clearCategoriesButtons,
+  
 } from './helpers';
 
 let currentPage = 1;
@@ -221,3 +223,25 @@ export const categoriesClickHandler = () => {
     }
   });
 };
+
+/* #region  Зміна теми*/
+export const getCurrentTheme = () => localStorage.getItem(THEME_KEY) || 'light';
+
+export const applyTheme = (theme) => {
+  document.documentElement.setAttribute('data-theme', theme);
+};
+
+export const toggleTheme = () => {
+  const current = getCurrentTheme();
+  const next = current === 'light' ? 'dark' : 'light';
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+};
+
+export const initThemeToggle = () => {
+  applyTheme(getCurrentTheme());
+
+  const btn = document.querySelector('.theme-toggle-btn');
+  if (btn) btn.addEventListener('click', toggleTheme);
+};
+/* #endregion тема*/

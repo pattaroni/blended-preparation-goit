@@ -12,3 +12,6 @@ export const CONTENT_TYPES = {
   COMMON: 'common',
   PRODUCTS_BY_CATEGORY: 'productsByCategory',
 };
+
+// Ключ для localStorage
+export const THEME_KEY = 'theme';
