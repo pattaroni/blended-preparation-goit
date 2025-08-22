@@ -281,3 +281,11 @@ export const initThemeToggle = () => {
   if (btn) btn.addEventListener('click', toggleTheme);
 };
 /* #endregion тема*/
+
+export function restoreUserValue(refs, callback) {
+  const savedValue = localStorage.getItem('userValue');
+  if (!savedValue) return;
+
+  refs.searchFormEl.searchValue.value = savedValue;
+  callback(savedValue, 1);
+}
