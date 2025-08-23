@@ -134,6 +134,7 @@ export const submitEventFunction = () => {
     
     userValue = e.target.searchValue.value.trim();
     localStorage.setItem('userValue', userValue);
+    localStorage.removeItem('selectedCategory');
 
     if (!checkStatusUserValue(userValue)) return;
 
@@ -213,6 +214,7 @@ export const categoriesClickHandler = () => {
     }
 
     selectedCategory = e.target.textContent;
+    localStorage.removeItem('userValue');
     localStorage.setItem('selectedCategory', selectedCategory);
 
     refs.ulProductEl.innerHTML = '';
