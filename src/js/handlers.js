@@ -15,16 +15,15 @@ import {
   renderProductByID,
   renderByValue,
 } from './render-function';
-import { CONTENT_TYPES, THEME_KEY } from './constants';
+import { CONTENT_TYPES, STORAGE_KEYS } from './constants';
 
 import { refs } from './refs';
 import {
-  
   checkStatusSearchProduct,
   checkStatusUserValue,
   clearCategoriesButtons,
-  
 } from './helpers';
+import { getDataFromStorage } from './storage';
 
 let currentPage = 1;
 let userValue;
@@ -130,8 +129,8 @@ export const initLoadMoreHandler = () => {
 // Обробка сабміту пошуку
 export const submitEventFunction = () => {
   refs.searchFormEl.addEventListener('submit', async e => {
-   e.preventDefault();
-    
+    e.preventDefault();
+
     userValue = e.target.searchValue.value.trim();
     localStorage.setItem('userValue', userValue);
 
@@ -261,16 +260,17 @@ export const categoriesClickHandler = () => {
 };
 
 /* #region  Зміна теми*/
-export const getCurrentTheme = () => localStorage.getItem(THEME_KEY) || 'light';
+export const getCurrentTheme = () =>
+  localStorage.getItem(STORAGE_KEYS.THEME) || 'light';
 
-export const applyTheme = (theme) => {
+export const applyTheme = theme => {
   document.documentElement.setAttribute('data-theme', theme);
 };
 
 export const toggleTheme = () => {
   const current = getCurrentTheme();
   const next = current === 'light' ? 'dark' : 'light';
-  localStorage.setItem(THEME_KEY, next);
+  localStorage.setItem(STORAGE_KEYS.THEME, next);
   applyTheme(next);
 };
 
@@ -283,9 +283,22 @@ export const initThemeToggle = () => {
 /* #endregion тема*/
 
 export function restoreUserValue(refs, callback) {
-  const savedValue = localStorage.getItem('userValue');
+  const savedValue = localStorage.getItem(STORAGE_KEYS.USER_VALUE);
   if (!savedValue) return;
 
   refs.searchFormEl.searchValue.value = savedValue;
   callback(savedValue, 1);
 }
+
+export const buyProductsBtnHandler = () => {
+  refs.buyProductsBtn.addEventListener('click', () => {
+    const products = getDataFromStorage(STORAGE_KEYS.CART);
+
+    if (products?.length) {
+      iziToast.success({
+        message: 'Thank you for your purchase!',
+        position: 'topCenter',
+      });
+    }
+  });
+};

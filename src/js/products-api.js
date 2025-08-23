@@ -46,3 +46,10 @@ export const fetchProductsByCategory = async (category, currentPage) => {
   );
   return data;
 };
+
+export const fetchProductsByIDs = async ids => {
+  const data = await Promise.all(
+    ids.map(id => axios.get(`${ENDPOINTS.PRODUCTS}/${id}`))
+  );
+  return data.map(item => item.data);
+};
