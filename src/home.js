@@ -17,9 +17,9 @@ import { refs } from './js/refs';
 // Логіка сторінки Home
 async function initHomePage() {
       scrollToTop();
-await getCategories(); // ✅ чекаємо, поки кнопки з'являться
-      restoreSelectedCategory(); // ✅ тепер можна активувати збережену категорію
-await getProducts(); // якщо хочеш, щоб продукти теж чекали категорію
+await getCategories();
+      restoreSelectedCategory(); 
+await getProducts(); 
       submitEventFunction();
       clearButtonProducts();
       productClickHandler();
@@ -30,5 +30,5 @@ await getProducts(); // якщо хочеш, щоб продукти теж че
   restoreSearchState();
 }
 
-initHomePage(); // запускаємо
+initHomePage(); 
 

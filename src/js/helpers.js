@@ -79,13 +79,13 @@ export function restoreUserValue(refs, callback) {
   callback(savedValue, 1);
 }
 
-//
+
 
 
 refs.homeLogoEl.addEventListener('click', (e) => {
   localStorage.removeItem('userValue');
   localStorage.removeItem('selectedCategory');
-  // Якщо перехід через JS — можеш зробити:
+  
   window.location.href = '/';
 });
 
