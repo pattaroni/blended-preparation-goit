@@ -194,7 +194,7 @@ export const productClickHandler = () => {
     }
   });
 
-  refs.modalCloseBtn.addEventListener('click', () => {
+    refs.modalCloseBtn.addEventListener('click', () => {
     refs.modalEl.classList.remove('modal--is-open');
     refs.modalListEl.innerHTML = '';
   });

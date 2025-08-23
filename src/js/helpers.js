@@ -47,6 +47,7 @@ export const clearButtonProducts = () => {
       allBtn.classList.add('categories__btn--active');
     }
 
+    localStorage.removeItem('userValue');
     resetCurrentPage();
     getProducts();
   });
@@ -78,9 +79,6 @@ export function restoreUserValue(refs, callback) {
   refs.searchFormEl.searchValue.value = savedValue;
   callback(savedValue, 1);
 }
-
-
-
 
 refs.homeLogoEl.addEventListener('click', (e) => {
   localStorage.removeItem('userValue');
