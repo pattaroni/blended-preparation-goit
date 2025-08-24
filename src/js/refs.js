@@ -17,4 +17,6 @@ export const refs = {
   wishlistCountEl: document.querySelector('[data-wishlist-count]'),
   priceCountEl: document.querySelector('[data-price]'),
   homeLogoEl: document.querySelector('.logo'),
+  wishlistBtnEl: document.querySelector('[data-wishlist]'),
+  cartBtnEl: document.querySelector('[data-cart]'),
 };

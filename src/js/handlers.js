@@ -15,7 +15,7 @@ import {
   renderProductByID,
   renderByValue,
 } from './render-function';
-import { CONTENT_TYPES, STORAGE_KEYS } from './constants';
+import { CONTENT_TYPES, PAGES_NAMES, STORAGE_KEYS } from './constants';
 
 import { refs } from './refs';
 import {
@@ -23,7 +23,11 @@ import {
   checkStatusUserValue,
   clearCategoriesButtons,
 } from './helpers';
-import { getDataFromStorage, saveDataToStorage } from './storage';
+import {
+  getDataFromStorage,
+  removeDataFromStorage,
+  saveDataToStorage,
+} from './storage';
 
 let currentPage = 1;
 let userValue;
@@ -31,6 +35,7 @@ let totalPages = 0;
 let selectedCategory = '';
 let isCategoriesLoading = false;
 let contentType = CONTENT_TYPES.COMMON;
+let visibleProductId;
 
 export const resetCurrentPage = () => {
   currentPage = 1;
@@ -180,10 +185,25 @@ export const productClickHandler = () => {
     const target = e.target.closest('li');
     if (!target) return;
 
-    const id = target.dataset.id;
+    const id = Number(target.dataset.id);
     if (!id) return;
 
     refs.modalEl.classList.add('modal--is-open');
+    visibleProductId = id;
+    const wishlistProductsIds = getDataFromStorage(STORAGE_KEYS.WISHLIST) || [];
+    const cartProductsIds = getDataFromStorage(STORAGE_KEYS.CART) || [];
+
+    if (wishlistProductsIds.includes(id)) {
+      refs.wishlistBtnEl.textContent = 'Remove from Wishlist';
+    } else {
+      refs.wishlistBtnEl.textContent = 'Add to Wishlist';
+    }
+
+    if (cartProductsIds.includes(id)) {
+      refs.cartBtnEl.textContent = 'Remove from Cart';
+    } else {
+      refs.cartBtnEl.textContent = 'Add to Cart';
+    }
 
     try {
       const productData = await fetchProductByID(id);
@@ -330,6 +350,71 @@ export const buyProductsBtnHandler = () => {
         message: 'Thank you for your purchase!',
         position: 'topCenter',
       });
+    }
+  });
+};
+
+export const initModalHandlers = () => {
+  refs.wishlistBtnEl.addEventListener('click', () => {
+    const wishlistProductsIds = getDataFromStorage(STORAGE_KEYS.WISHLIST) || [];
+    const isWishlistPage = window.location.pathname.includes(
+      PAGES_NAMES.WISHLIST
+    );
+
+    if (wishlistProductsIds.includes(visibleProductId)) {
+      removeDataFromStorage(STORAGE_KEYS.WISHLIST, visibleProductId);
+      refs.wishlistBtnEl.textContent = 'Add to Wishlist';
+      refs.wishlistCountEl.textContent = Math.max(
+        0,
+        wishlistProductsIds.length - 1
+      );
+
+      if (isWishlistPage) {
+        document
+          .querySelector(`.products__item[data-id="${visibleProductId}"]`)
+          ?.remove();
+
+        if (refs.ulProductEl.children.length === 0) {
+          refs.notFoundEl.classList.add('not-found--visible');
+        }
+        refs.modalEl.classList.remove('modal--is-open');
+      }
+    } else {
+      saveDataToStorage(STORAGE_KEYS.WISHLIST, [
+        ...wishlistProductsIds,
+        visibleProductId,
+      ]);
+      refs.wishlistBtnEl.textContent = 'Remove from Wishlist';
+      refs.wishlistCountEl.textContent = wishlistProductsIds.length + 1;
+    }
+  });
+
+  refs.cartBtnEl.addEventListener('click', () => {
+    const cartProductsIds = getDataFromStorage(STORAGE_KEYS.CART) || [];
+    const isCartPage = window.location.pathname.includes(PAGES_NAMES.CART);
+
+    if (cartProductsIds.includes(visibleProductId)) {
+      removeDataFromStorage(STORAGE_KEYS.CART, visibleProductId);
+      refs.cartBtnEl.textContent = 'Add to Cart';
+      refs.cartCountEl.textContent = Math.max(0, cartProductsIds.length - 1);
+
+      if (isCartPage) {
+        document
+          .querySelector(`.products__item[data-id="${visibleProductId}"]`)
+          ?.remove();
+
+        if (refs.ulProductEl.children.length === 0) {
+          refs.notFoundEl.classList.add('not-found--visible');
+        }
+        refs.modalEl.classList.remove('modal--is-open');
+      }
+    } else {
+      saveDataToStorage(STORAGE_KEYS.CART, [
+        ...cartProductsIds,
+        visibleProductId,
+      ]);
+      refs.cartBtnEl.textContent = 'Remove from Cart';
+      refs.cartCountEl.textContent = cartProductsIds.length + 1;
     }
   });
 };

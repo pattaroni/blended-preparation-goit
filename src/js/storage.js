@@ -22,3 +22,16 @@ export const saveDataToStorage = (key, data) => {
     ? localStorage.setItem(key, JSON.stringify(data))
     : localStorage.setItem(key, data);
 };
+
+const removeIdFromArrayStorage = (key, productId) => {
+  const productsIds = getDataFromStorage(key) || [];
+
+  const filteredIds = productsIds.filter(id => id !== Number(productId));
+  localStorage.setItem(key, JSON.stringify(filteredIds));
+};
+
+export const removeDataFromStorage = (key, productId) => {
+  [STORAGE_KEYS.CART, STORAGE_KEYS.WISHLIST].includes(key)
+    ? removeIdFromArrayStorage(key, productId)
+    : localStorage.removeItem(key);
+};

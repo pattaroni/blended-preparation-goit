@@ -14,11 +14,15 @@ export const CONTENT_TYPES = {
   SEARCH: 'search',
 };
 
-// Ключ для localStorage
 export const STORAGE_KEYS = {
   CART: 'cart',
   WISHLIST: 'wishlist',
   THEME: 'theme',
   USER_VALUE: 'userValue',
   SELECTED_CATEGORY: 'selectedCategory',
+};
+
+export const PAGES_NAMES = {
+  CART: 'cart',
+  WISHLIST: 'wishlist',
 };
