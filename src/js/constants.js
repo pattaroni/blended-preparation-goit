@@ -15,4 +15,10 @@ export const CONTENT_TYPES = {
 };
 
 // Ключ для localStorage
-export const THEME_KEY = 'theme';
+export const STORAGE_KEYS = {
+  CART: 'cart',
+  WISHLIST: 'wishlist',
+  THEME: 'theme',
+  USER_VALUE: 'userValue',
+  SELECTED_CATEGORY: 'selectedCategory',
+};

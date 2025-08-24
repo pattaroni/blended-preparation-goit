@@ -11,6 +11,10 @@ export const refs = {
   loaderEl: document.querySelector('.loader'),
   scrollToTopBtn: document.querySelector('.scroll-top-btn'),
   toggleThemeEl: document.querySelector('.theme-toggle-btn'),
+  buyProductsBtn: document.querySelector('.cart-summary__btn'),
+  cartCountEl: document.querySelector('[data-cart-count]'),
+  productsCountEl: document.querySelector('[data-count]'),
+  wishlistCountEl: document.querySelector('[data-wishlist-count]'),
+  priceCountEl: document.querySelector('[data-price]'),
   homeLogoEl: document.querySelector('.logo'),
-  
 };

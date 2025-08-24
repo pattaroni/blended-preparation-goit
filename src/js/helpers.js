@@ -6,7 +6,6 @@ import { getProducts, resetCurrentPage } from './handlers';
 import { renderByValue } from './render-function';
 import { searchByValue } from './products-api';
 
-
 // Перевірка введеного значення
 export const checkStatusUserValue = userValue => {
   if (!userValue) {
@@ -80,13 +79,12 @@ export function restoreUserValue(refs, callback) {
   callback(savedValue, 1);
 }
 
-refs.homeLogoEl.addEventListener('click', (e) => {
+refs.homeLogoEl.addEventListener('click', e => {
   localStorage.removeItem('userValue');
   localStorage.removeItem('selectedCategory');
-  
+
   window.location.href = '/';
 });
-
 
 export async function restoreSearchState() {
   const userValue = localStorage.getItem('userValue');
@@ -96,7 +94,6 @@ export async function restoreSearchState() {
 
   const res = await searchByValue(userValue);
   if (!Array.isArray(res.products)) return;
-  
- 
+
   renderByValue(res.products);
 }
