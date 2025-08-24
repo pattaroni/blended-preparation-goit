@@ -70,15 +70,6 @@ export const scrollToTop = () => {
   });
 };
 
-//при перезавантажені залишається userValue
-export function restoreUserValue(refs, callback) {
-  const savedValue = localStorage.getItem('userValue');
-  if (!savedValue) return;
-
-  refs.searchFormEl.searchValue.value = savedValue;
-  callback(savedValue, 1);
-}
-
 refs.homeLogoEl.addEventListener('click', e => {
   localStorage.removeItem('userValue');
   localStorage.removeItem('selectedCategory');

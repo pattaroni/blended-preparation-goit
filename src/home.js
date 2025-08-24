@@ -7,12 +7,13 @@ import {
   initLoadMoreHandler,
   initThemeToggle,
   restoreSelectedCategory,
-  
 } from './js/handlers';
 
-import { clearButtonProducts,restoreSearchState,restoreUserValue,scrollToTop } from './js/helpers';
-import { searchByValue } from './js/products-api';
-import { refs } from './js/refs';
+import {
+  clearButtonProducts,
+  restoreSearchState,
+  scrollToTop,
+} from './js/helpers';
 
 // Логіка сторінки Home
 async function initHomePage() {
@@ -26,9 +27,7 @@ async function initHomePage() {
   categoriesClickHandler();
   initLoadMoreHandler();
   initThemeToggle();
-  restoreUserValue(refs, searchByValue);
   restoreSearchState();
 }
 
-initHomePage(); 
-
+initHomePage();
