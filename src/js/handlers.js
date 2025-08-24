@@ -23,7 +23,7 @@ import {
   checkStatusUserValue,
   clearCategoriesButtons,
 } from './helpers';
-import { getDataFromStorage } from './storage';
+import { getDataFromStorage, saveDataToStorage } from './storage';
 
 let currentPage = 1;
 let userValue;
@@ -132,8 +132,8 @@ export const submitEventFunction = () => {
     e.preventDefault();
 
     userValue = e.target.searchValue.value.trim();
-    localStorage.setItem('userValue', userValue);
-    localStorage.removeItem('selectedCategory');
+    saveDataToStorage(STORAGE_KEYS.USER_VALUE, userValue);
+    localStorage.removeItem(STORAGE_KEYS.SELECTED_CATEGORY);
 
     if (!checkStatusUserValue(userValue)) return;
 
@@ -213,8 +213,8 @@ export const categoriesClickHandler = () => {
     }
 
     selectedCategory = e.target.textContent;
-    localStorage.removeItem('userValue');
-    localStorage.setItem('selectedCategory', selectedCategory);
+    localStorage.removeItem(STORAGE_KEYS.USER_VALUE);
+    saveDataToStorage(STORAGE_KEYS.SELECTED_CATEGORY, selectedCategory);
 
     refs.ulProductEl.innerHTML = '';
     refs.notFoundEl.classList.remove('not-found--visible');
@@ -265,7 +265,7 @@ export const categoriesClickHandler = () => {
 
 /* #region  Зміна теми*/
 export const getCurrentTheme = () =>
-  localStorage.getItem(STORAGE_KEYS.THEME) || 'light';
+  getDataFromStorage(STORAGE_KEYS.THEME) || 'light';
 
 export const applyTheme = theme => {
   document.documentElement.setAttribute('data-theme', theme);
@@ -274,7 +274,7 @@ export const applyTheme = theme => {
 export const toggleTheme = () => {
   const current = getCurrentTheme();
   const next = current === 'light' ? 'dark' : 'light';
-  localStorage.setItem(STORAGE_KEYS.THEME, next);
+  saveDataToStorage(STORAGE_KEYS.THEME, next);
   applyTheme(next);
 };
 
@@ -287,7 +287,7 @@ export const initThemeToggle = () => {
 /* #endregion тема*/
 
 export async function restoreSelectedCategory() {
-  const savedCategory = localStorage.getItem(STORAGE_KEYS.SELECTED_CATEGORY);
+  const savedCategory = getDataFromStorage(STORAGE_KEYS.SELECTED_CATEGORY);
   if (!savedCategory) return;
 
   selectedCategory = savedCategory;

@@ -5,6 +5,8 @@ import { refs } from './refs';
 import { getProducts, resetCurrentPage } from './handlers';
 import { renderByValue } from './render-function';
 import { searchByValue } from './products-api';
+import { STORAGE_KEYS } from './constants';
+import { getDataFromStorage } from './storage';
 
 // Перевірка введеного значення
 export const checkStatusUserValue = userValue => {
@@ -46,7 +48,7 @@ export const clearButtonProducts = () => {
       allBtn.classList.add('categories__btn--active');
     }
 
-    localStorage.removeItem('userValue');
+    localStorage.removeItem(STORAGE_KEYS.USER_VALUE);
     resetCurrentPage();
     getProducts();
   });
@@ -71,14 +73,14 @@ export const scrollToTop = () => {
 };
 
 refs.homeLogoEl.addEventListener('click', e => {
-  localStorage.removeItem('userValue');
-  localStorage.removeItem('selectedCategory');
+  localStorage.removeItem(STORAGE_KEYS.USER_VALUE);
+  localStorage.removeItem(STORAGE_KEYS.SELECTED_CATEGORY);
 
   window.location.href = '/';
 });
 
 export async function restoreSearchState() {
-  const userValue = localStorage.getItem('userValue');
+  const userValue = getDataFromStorage(STORAGE_KEYS.USER_VALUE);
   if (!userValue) return;
 
   refs.searchFormEl.searchValue.value = userValue;
