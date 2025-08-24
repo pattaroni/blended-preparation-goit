@@ -134,6 +134,7 @@ export const submitEventFunction = () => {
     
     userValue = e.target.searchValue.value.trim();
     localStorage.setItem('userValue', userValue);
+    localStorage.removeItem('selectedCategory');
 
     if (!checkStatusUserValue(userValue)) return;
 
@@ -155,6 +156,7 @@ export const submitEventFunction = () => {
         refs.loadMoreBtn.classList.add('is-hidden');
         refs.notFoundEl.classList.add('not-found--visible');
         refs.ulProductEl.innerHTML = '';
+        
         return;
       }
 
@@ -192,7 +194,7 @@ export const productClickHandler = () => {
     }
   });
 
-  refs.modalCloseBtn.addEventListener('click', () => {
+    refs.modalCloseBtn.addEventListener('click', () => {
     refs.modalEl.classList.remove('modal--is-open');
     refs.modalListEl.innerHTML = '';
   });
@@ -212,6 +214,8 @@ export const categoriesClickHandler = () => {
     }
 
     selectedCategory = e.target.textContent;
+    localStorage.removeItem('userValue');
+    localStorage.setItem('selectedCategory', selectedCategory);
 
     refs.ulProductEl.innerHTML = '';
     refs.notFoundEl.classList.remove('not-found--visible');
@@ -282,10 +286,37 @@ export const initThemeToggle = () => {
 };
 /* #endregion тема*/
 
-export function restoreUserValue(refs, callback) {
-  const savedValue = localStorage.getItem('userValue');
-  if (!savedValue) return;
+export async function restoreSelectedCategory() {
+  const savedCategory = localStorage.getItem('selectedCategory');
+  if (!savedCategory) return;
 
-  refs.searchFormEl.searchValue.value = savedValue;
-  callback(savedValue, 1);
+  selectedCategory = savedCategory;
+  contentType = savedCategory === 'All'
+    ? CONTENT_TYPES.COMMON
+    : CONTENT_TYPES.PRODUCTS_BY_CATEGORY;
+
+  refs.searchFormEl.searchValue.value = '';
+  refs.clearBtnForm.classList.remove('search-form__btn-clear--visible');
+  refs.notFoundEl.classList.remove('not-found--visible');
+  refs.ulProductEl.innerHTML = '';
+  refs.loaderEl.classList.add('is-visible');
+
+  const buttons = refs.ulCategorEl.querySelectorAll('.categories__btn');
+  buttons.forEach(btn => {
+    btn.classList.remove('categories__btn--active');
+    if (btn.textContent === savedCategory) {
+      btn.classList.add('categories__btn--active');
+    }
+  });
+
+  let result;
+  if (savedCategory === 'All') {
+    result = await fetchProducts(1);
+  } else {
+    result = await fetchProductsByCategory(savedCategory, 1);
+  }
+
+  renderProducts(result.products);
+  refs.loaderEl.classList.remove('is-visible');
 }
+

@@ -18,7 +18,7 @@ export const fetchProducts = async currentPage => {
   return data;
 };
 
-export const searchByValue = async (userValue, currentPage) => {
+export const searchByValue = async (userValue, currentPage = 1) => {
   const { data } = await axios.get(`${ENDPOINTS.SEARCH}`, {
     params: {
       limit: PER_PAGE,
