@@ -16,16 +16,16 @@ import { refs } from './js/refs';
 
 // Логіка сторінки Home
 async function initHomePage() {
-      scrollToTop();
-await getCategories();
-      restoreSelectedCategory(); 
-await getProducts(); 
-      submitEventFunction();
-      clearButtonProducts();
-      productClickHandler();
-      categoriesClickHandler();
-      initLoadMoreHandler();
-      initThemeToggle();
+  scrollToTop();
+  await getCategories();
+  await restoreSelectedCategory();
+  await getProducts();
+  submitEventFunction();
+  clearButtonProducts();
+  productClickHandler();
+  categoriesClickHandler();
+  initLoadMoreHandler();
+  initThemeToggle();
   restoreUserValue(refs, searchByValue);
   restoreSearchState();
 }
