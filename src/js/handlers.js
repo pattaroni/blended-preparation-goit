@@ -15,16 +15,19 @@ import {
   renderProductByID,
   renderByValue,
 } from './render-function';
-import { CONTENT_TYPES, THEME_KEY } from './constants';
+import { CONTENT_TYPES, PAGES_NAMES, STORAGE_KEYS } from './constants';
 
 import { refs } from './refs';
 import {
-  
   checkStatusSearchProduct,
   checkStatusUserValue,
   clearCategoriesButtons,
-  
 } from './helpers';
+import {
+  getDataFromStorage,
+  removeDataFromStorage,
+  saveDataToStorage,
+} from './storage';
 
 let currentPage = 1;
 let userValue;
@@ -32,6 +35,7 @@ let totalPages = 0;
 let selectedCategory = '';
 let isCategoriesLoading = false;
 let contentType = CONTENT_TYPES.COMMON;
+let visibleProductId;
 
 export const resetCurrentPage = () => {
   currentPage = 1;
@@ -130,11 +134,11 @@ export const initLoadMoreHandler = () => {
 // Обробка сабміту пошуку
 export const submitEventFunction = () => {
   refs.searchFormEl.addEventListener('submit', async e => {
-   e.preventDefault();
-    
+    e.preventDefault();
+
     userValue = e.target.searchValue.value.trim();
-    localStorage.setItem('userValue', userValue);
-    localStorage.removeItem('selectedCategory');
+    saveDataToStorage(STORAGE_KEYS.USER_VALUE, userValue);
+    localStorage.removeItem(STORAGE_KEYS.SELECTED_CATEGORY);
 
     if (!checkStatusUserValue(userValue)) return;
 
@@ -156,7 +160,7 @@ export const submitEventFunction = () => {
         refs.loadMoreBtn.classList.add('is-hidden');
         refs.notFoundEl.classList.add('not-found--visible');
         refs.ulProductEl.innerHTML = '';
-        
+
         return;
       }
 
@@ -181,10 +185,25 @@ export const productClickHandler = () => {
     const target = e.target.closest('li');
     if (!target) return;
 
-    const id = target.dataset.id;
+    const id = Number(target.dataset.id);
     if (!id) return;
 
     refs.modalEl.classList.add('modal--is-open');
+    visibleProductId = id;
+    const wishlistProductsIds = getDataFromStorage(STORAGE_KEYS.WISHLIST) || [];
+    const cartProductsIds = getDataFromStorage(STORAGE_KEYS.CART) || [];
+
+    if (wishlistProductsIds.includes(id)) {
+      refs.wishlistBtnEl.textContent = 'Remove from Wishlist';
+    } else {
+      refs.wishlistBtnEl.textContent = 'Add to Wishlist';
+    }
+
+    if (cartProductsIds.includes(id)) {
+      refs.cartBtnEl.textContent = 'Remove from Cart';
+    } else {
+      refs.cartBtnEl.textContent = 'Add to Cart';
+    }
 
     try {
       const productData = await fetchProductByID(id);
@@ -194,7 +213,7 @@ export const productClickHandler = () => {
     }
   });
 
-    refs.modalCloseBtn.addEventListener('click', () => {
+  refs.modalCloseBtn.addEventListener('click', () => {
     refs.modalEl.classList.remove('modal--is-open');
     refs.modalListEl.innerHTML = '';
   });
@@ -214,8 +233,8 @@ export const categoriesClickHandler = () => {
     }
 
     selectedCategory = e.target.textContent;
-    localStorage.removeItem('userValue');
-    localStorage.setItem('selectedCategory', selectedCategory);
+    localStorage.removeItem(STORAGE_KEYS.USER_VALUE);
+    saveDataToStorage(STORAGE_KEYS.SELECTED_CATEGORY, selectedCategory);
 
     refs.ulProductEl.innerHTML = '';
     refs.notFoundEl.classList.remove('not-found--visible');
@@ -265,16 +284,17 @@ export const categoriesClickHandler = () => {
 };
 
 /* #region  Зміна теми*/
-export const getCurrentTheme = () => localStorage.getItem(THEME_KEY) || 'light';
+export const getCurrentTheme = () =>
+  getDataFromStorage(STORAGE_KEYS.THEME) || 'light';
 
-export const applyTheme = (theme) => {
+export const applyTheme = theme => {
   document.documentElement.setAttribute('data-theme', theme);
 };
 
 export const toggleTheme = () => {
   const current = getCurrentTheme();
   const next = current === 'light' ? 'dark' : 'light';
-  localStorage.setItem(THEME_KEY, next);
+  saveDataToStorage(STORAGE_KEYS.THEME, next);
   applyTheme(next);
 };
 
@@ -287,13 +307,14 @@ export const initThemeToggle = () => {
 /* #endregion тема*/
 
 export async function restoreSelectedCategory() {
-  const savedCategory = localStorage.getItem('selectedCategory');
+  const savedCategory = getDataFromStorage(STORAGE_KEYS.SELECTED_CATEGORY);
   if (!savedCategory) return;
 
   selectedCategory = savedCategory;
-  contentType = savedCategory === 'All'
-    ? CONTENT_TYPES.COMMON
-    : CONTENT_TYPES.PRODUCTS_BY_CATEGORY;
+  contentType =
+    savedCategory === 'All'
+      ? CONTENT_TYPES.COMMON
+      : CONTENT_TYPES.PRODUCTS_BY_CATEGORY;
 
   refs.searchFormEl.searchValue.value = '';
   refs.clearBtnForm.classList.remove('search-form__btn-clear--visible');
@@ -320,3 +341,80 @@ export async function restoreSelectedCategory() {
   refs.loaderEl.classList.remove('is-visible');
 }
 
+export const buyProductsBtnHandler = () => {
+  refs.buyProductsBtn.addEventListener('click', () => {
+    const products = getDataFromStorage(STORAGE_KEYS.CART);
+
+    if (products?.length) {
+      iziToast.success({
+        message: 'Thank you for your purchase!',
+        position: 'topCenter',
+      });
+    }
+  });
+};
+
+export const initModalHandlers = () => {
+  refs.wishlistBtnEl.addEventListener('click', () => {
+    const wishlistProductsIds = getDataFromStorage(STORAGE_KEYS.WISHLIST) || [];
+    const isWishlistPage = window.location.pathname.includes(
+      PAGES_NAMES.WISHLIST
+    );
+
+    if (wishlistProductsIds.includes(visibleProductId)) {
+      removeDataFromStorage(STORAGE_KEYS.WISHLIST, visibleProductId);
+      refs.wishlistBtnEl.textContent = 'Add to Wishlist';
+      refs.wishlistCountEl.textContent = Math.max(
+        0,
+        wishlistProductsIds.length - 1
+      );
+
+      if (isWishlistPage) {
+        document
+          .querySelector(`.products__item[data-id="${visibleProductId}"]`)
+          ?.remove();
+
+        if (refs.ulProductEl.children.length === 0) {
+          refs.notFoundEl.classList.add('not-found--visible');
+        }
+        refs.modalEl.classList.remove('modal--is-open');
+      }
+    } else {
+      saveDataToStorage(STORAGE_KEYS.WISHLIST, [
+        ...wishlistProductsIds,
+        visibleProductId,
+      ]);
+      refs.wishlistBtnEl.textContent = 'Remove from Wishlist';
+      refs.wishlistCountEl.textContent = wishlistProductsIds.length + 1;
+    }
+  });
+
+  refs.cartBtnEl.addEventListener('click', () => {
+    const cartProductsIds = getDataFromStorage(STORAGE_KEYS.CART) || [];
+    const isCartPage = window.location.pathname.includes(PAGES_NAMES.CART);
+
+    if (cartProductsIds.includes(visibleProductId)) {
+      removeDataFromStorage(STORAGE_KEYS.CART, visibleProductId);
+      refs.cartBtnEl.textContent = 'Add to Cart';
+      refs.cartCountEl.textContent = Math.max(0, cartProductsIds.length - 1);
+
+      if (isCartPage) {
+        document
+          .querySelector(`.products__item[data-id="${visibleProductId}"]`)
+          ?.remove();
+
+        if (refs.ulProductEl.children.length === 0) {
+          refs.notFoundEl.classList.add('not-found--visible');
+        }
+        refs.modalEl.classList.remove('modal--is-open');
+      }
+    } else {
+      saveDataToStorage(STORAGE_KEYS.CART, [
+        ...cartProductsIds,
+        visibleProductId,
+      ]);
+      refs.cartBtnEl.textContent = 'Remove from Cart';
+      refs.cartCountEl.textContent = cartProductsIds.length + 1;
+    }
+  });
+};
