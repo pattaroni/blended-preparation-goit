@@ -8,6 +8,7 @@ import {
   initThemeToggle,
   restoreSelectedCategory,
   initModalHandlers,
+  homeStorageRefresher,
 } from './js/handlers';
 
 import {
@@ -39,6 +40,7 @@ async function initHomePage() {
   initThemeToggle();
   restoreSearchState();
   initModalHandlers();
+  homeStorageRefresher();
 }
 
 initHomePage();
