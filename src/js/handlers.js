@@ -418,3 +418,14 @@ export const initModalHandlers = () => {
     }
   });
 };
+
+//кропка HOME
+export const homeStorageRefresher = () => {
+  refs.homeNavEl.addEventListener('click', e => {
+
+    removeDataFromStorage(STORAGE_KEYS.USER_VALUE);
+    removeDataFromStorage(STORAGE_KEYS.SELECTED_CATEGORY);
+
+    refs.searchFormEl.reset()
+  })
+}

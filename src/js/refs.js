@@ -19,4 +19,7 @@ export const refs = {
   homeLogoEl: document.querySelector('.logo'),
   wishlistBtnEl: document.querySelector('[data-wishlist]'),
   cartBtnEl: document.querySelector('[data-cart]'),
+  homeNavEl: document.querySelector('.js-homebtn')
+ 
+  
 };
